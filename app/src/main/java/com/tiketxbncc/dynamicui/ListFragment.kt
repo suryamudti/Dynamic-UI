@@ -55,23 +55,44 @@ class ListFragment : Fragment() {
 
 class ListAdapter(
     val dataSet: List<Content>
-): RecyclerView.Adapter<ListAdapter.ViewHolder>() {
+): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    companion object {
+
+    }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView = view.findViewById<TextView>(R.id.textview_list)
         val imageView = view.findViewById<ImageView>(R.id.image_view)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.item_list, parent, false)
-        )
+    class ViewHolder2(view: View) : RecyclerView.ViewHolder(view) {
+        val textView = view.findViewById<TextView>(R.id.text2)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            0 -> ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_list, parent, false))
+            1 -> ViewHolder2(LayoutInflater.from(parent.context).inflate(R.layout.item_list_2, parent, false))
+            else -> throw error("")
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val context = holder.itemView.context
-        holder.textView.text = dataSet[position].name
-        holder.imageView.setImageDrawable(context.getDrawable(dataSet[position].icon))
+        when (holder) {
+            is ViewHolder -> {
+                holder.textView.text = dataSet[position].name
+                holder.imageView.setImageDrawable(context.getDrawable(dataSet[position].icon))
+            }
+            is ViewHolder2 -> {
+                holder.textView.text = dataSet[position].name
+            }
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position % 2
     }
 
     override fun getItemCount() = dataSet.size
